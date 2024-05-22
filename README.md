@@ -27,4 +27,5 @@ environment.yml, the script will ask for an alternative path to an environment f
   - When executing it from terminal, use ```source activate_environment_unix.sh```
 - _For Pros_: Activate your own environment
 
-In the now opened command line, you can use the activated environment.
+In the now opened command line, you can use the activated environment. The working directory will be the 
+**parent folder** of the script.

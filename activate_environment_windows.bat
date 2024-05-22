@@ -1,5 +1,5 @@
-:: Initializes 'conda' and activates environment from parent folder. If it doesn't exist or doesn't fulfill the
-:: requirements from 'environment.yml', it creates the environment newly from 'environment.yml'.
+:: Initializes Conda and activates environment from parent folder. If it doesn't exist or doesn't fulfill the
+:: requirements from the environment file, it creates the environment according to this file.
 :: Notes: Has to use goto instead of (much prettier) if/else to handle error-levels correctly
 @goto :initializeConda
 
@@ -7,38 +7,37 @@
 :initializeConda
 @call "C:\Users\%USERNAME%\anaconda3\Scripts\activate.bat" "C:\Users\%USERNAME%\anaconda3"
 IF %ERRORLEVEL% NEQ 0 (
-    echo ERROR: 'conda' initialization failed! Please follow the setup instructions in README.md
+    echo ERROR: Conda initialization failed! Please follow the setup instructions in README.md
     goto :end
 )
-echo OK: 'conda' was initialized successfully!
+echo OK: Conda was initialized successfully!
 goto :findEnvironmentFile
 
 @REM Check if environment file exists or needs to be created
 :findEnvironmentFile
-
 @REM First check if 'environment.yml' exists in parent folder
 set p=../environment.yml
 if not exist ../environment.yml (
-    echo WARNING: 'environment.yml' does not exist in parent folder!
+    echo WARNING: 'environment.yml' does not exist in parent folder ^(at '../environment.yml'^)!
     goto :choiceEnvironmentPath
 ) else (
     echo OK: '%p%' file found!
     goto :findCondaEnvironment
 )
 
+@REM Give user the option to specify path to environment file
 :choiceEnvironmentPath
-@REM Give user the option to specify path of environment.yml
 set /P p="Please define path to environment file: "
 IF NOT EXIST %p% (
     echo ERROR: '%p%' not found!
     goto :choiceEnvironmentPath
 )
 
-echo OK: '%p%' found!
+echo OK: '%p%' file found!
 goto :findCondaEnvironment
 
+@REM Get environment name from first line of environment file
 :findCondaEnvironment
-@REM Get first line of environment file
 @REM See https://groups.google.com/g/alt.msdos.batch.nt/c/hpmCem5GnM0/m/lIHHsMoIsVMJ for details
 for /f "delims=" %%a in (%p%) do set "envName=%%a"&goto :stop
 :stop
@@ -47,14 +46,15 @@ for /f "delims=" %%a in (%p%) do set "envName=%%a"&goto :stop
 set envName=%envName:~6%
 echo OK: Looking for conda environment '%envName%'!
 
+@REM Check if conda environment exists
 @call conda env list | findstr %envName% > nul
 IF %ERRORLEVEL% NEQ 0 (
-    echo WARNING: Conda environment '%envName%' does not exist
+    echo WARNING: Conda environment '%envName%' does not exist!
     @REM Reset error level
     @call cmd /c exit /b 0
     goto :choiceCreate
 )
-echo OK: 'conda' environment '%envName%' found!
+echo OK: Conda environment '%envName%' found!
 goto :checkEnvironment
 
 @REM Check if conda environment fulfills all requirements from environment file
