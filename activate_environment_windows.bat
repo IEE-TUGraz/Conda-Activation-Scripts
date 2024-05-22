@@ -11,10 +11,41 @@ IF %ERRORLEVEL% NEQ 0 (
     goto :end
 )
 echo OK: 'conda' was initialized successfully!
-goto :findEnvironment
+goto :findEnvironmentFile
 
 @REM Check if environment file exists or needs to be created
-:findEnvironment
+:findEnvironmentFile
+
+@REM First check if 'environment.yml' exists in parent folder
+set p=../environment.yml
+if not exist ../environment.yml (
+    echo WARNING: 'environment.yml' does not exist in parent folder!
+    goto :choiceEnvironmentPath
+) else (
+    echo OK: '%p%' file found!
+    goto :findCondaEnvironment
+)
+
+:choiceEnvironmentPath
+@REM Give user the option to specify path of environment.yml
+set /P p="Please define path to environment file: "
+IF NOT EXIST %p% (
+    echo ERROR: '%p%' not found!
+    goto :choiceEnvironmentPath
+)
+
+echo OK: '%p%' found!
+goto :findCondaEnvironment
+
+:findCondaEnvironment
+@REM Get first line of environment file
+@REM See https://groups.google.com/g/alt.msdos.batch.nt/c/hpmCem5GnM0/m/lIHHsMoIsVMJ for details
+for /f "delims=" %%a in (%p%) do set "envName=%%a"&goto :stop
+:stop
+
+@REM Remove 'name: ' from 'name: [NameOfEnvironment]' to get the name of the environment
+set envName=%envName:~6%
+echo OK: Looking for conda environment '%envName%'!
 
 @call conda env list | findstr %envName% > nul
 IF %ERRORLEVEL% NEQ 0 (
@@ -98,4 +129,4 @@ goto :end
 
 :end
 @REM Keep the command line open
-@call cmd /k
+@call cmd /k cd ..
