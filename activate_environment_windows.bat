@@ -1,5 +1,5 @@
-:: Initializes 'conda' and activates environment 'LEGO_env'. If it doesn't exist or doesn't fulfill the requirements
-:: from 'environment.yml', it creates the environment newly from 'environment.yml'.
+:: Initializes 'conda' and activates environment from parent folder. If it doesn't exist or doesn't fulfill the
+:: requirements from 'environment.yml', it creates the environment newly from 'environment.yml'.
 :: Notes: Has to use goto instead of (much prettier) if/else to handle error-levels correctly
 @goto :initializeConda
 
@@ -13,86 +13,87 @@ IF %ERRORLEVEL% NEQ 0 (
 echo OK: 'conda' was initialized successfully!
 goto :findEnvironment
 
-@REM Check if 'LEGO_env' exists
+@REM Check if environment file exists or needs to be created
 :findEnvironment
-@call conda env list | findstr LEGO_env > nul
+
+@call conda env list | findstr %envName% > nul
 IF %ERRORLEVEL% NEQ 0 (
-    echo WARNING: 'conda' environment 'LEGO_env' does not exist
+    echo WARNING: Conda environment '%envName%' does not exist
     @REM Reset error level
     @call cmd /c exit /b 0
     goto :choiceCreate
 )
-echo OK: 'conda' environment 'LEGO_env' found!
+echo OK: 'conda' environment '%envName%' found!
 goto :checkEnvironment
 
-@REM Check if conda environment 'LEGO_env' fulfills all requirements from 'environment.yml'
+@REM Check if conda environment fulfills all requirements from environment file
 :checkEnvironment
-@call conda compare -n LEGO_env environment.yml > nul
+@call conda compare -n %envName% %p% > nul
 IF %ERRORLEVEL% NEQ 0 (
-    echo WARNING: 'LEGO_env' does not fulfill all requirements from 'environment.yml'
+    echo WARNING: '%envName%' does not fulfill all requirements from '%p%'
     @REM Reset error level
     @call cmd /c exit /b 0
     goto :choiceUpdate
 )
-echo OK: 'LEGO_env' fulfills all requirements from 'environment.yml'
+echo OK: '%envName%' fulfills all requirements from '%p%'
 goto :activateEnvironment
 
-@REM Activate 'LEGO_env'
+@REM Activate environment
 :activateEnvironment
-@call conda activate LEGO_env
+@call conda activate %envName%
 IF %ERRORLEVEL% NEQ 0 (
-    echo ERROR: 'LEGO_env' could not be activated - some error occurred!
+    echo ERROR: '%envName%' could not be activated - some error occurred!
     goto :end
 )
-echo SUCCESS: 'LEGO_env' was activated successfully!
+echo SUCCESS: '%envName%' was activated successfully!
 goto :end
 
 :choiceUpdate
-@REM Update 'LEGO_env' according to 'environment.yml' if the user wants to
-set /P c="Should 'LEGO_env' environment be updated according to 'environment.yml'? [Y/N] "
+@REM Update environment according to environment file if the user wants to
+set /P c="Should '%envName%' environment be updated according to '%p%'? [Y/N] "
 IF /I "%c%" EQU "Y" goto :updateEnvironment
 IF /I "%c%" EQU "N" goto :dontUpdateEnvironment
 @REM If this point is reached, the input was faulty
 echo Faulty input: '%c%' - Please choose 'Y' or 'N'!
 goto :choiceUpdate
 
-@REM Update 'LEGO_env'
+@REM Update environment
 :updateEnvironment
-call conda env update --name LEGO_env --file environment.yml --prune
+call conda env update --name %envName% --file %p% --prune
 IF %ERRORLEVEL% NEQ 0 (
-    echo ERROR: 'LEGO_env' could not be updated - some error occurred!
+    echo ERROR: '%envName%' could not be updated - some error occurred!
     goto :end
 )
-echo OK: 'LEGO_env' was updated successfully!
+echo OK: '%envName%' was updated successfully!
 goto :activateEnvironment
 
-@REM Don't update 'LEGO_env'
+@REM Don't update environment
 :dontUpdateEnvironment
-echo WARNING: 'LEGO_env' was not updated
+echo WARNING: '%envName%' was not updated
 goto :activateEnvironment
 
-@REM Create 'LEGO_env' newly from 'environment.yml' if the user wants to
+@REM Create environment newly from environment file if the user wants to
 :choiceCreate
-set /P c="Should 'LEGO_env' be newly created from 'environment.yml'? [Y/N] "
+set /P c="Should '%envName%' be newly created from '%p%'? [Y/N] "
 IF /I "%c%" EQU "Y" goto :createEnvironment
 IF /I "%c%" EQU "N" goto :dontCreateEnvironment
 @REM If this point is reached, the input was faulty
 echo Faulty input: '%c%' - Please choose 'Y' or 'N'!
 goto :choiceCreate
 
-@REM Create 'LEGO_env' from 'environment.yml'
+@REM Create environment from environment file
 :createEnvironment
-call conda env create -f environment.yml
+call conda env create -f %p%
 IF %ERRORLEVEL% NEQ 0 (
-    echo ERROR: 'LEGO_env' could not be created from 'environment.yml' - some error occurred!
+    echo ERROR: '%envName%' could not be created from '%p%' - some error occurred!
     goto :end
 )
-echo OK: 'LEGO_env' was created from environment.yml!
+echo OK: '%envName%' was created from %p%!
 goto :activateEnvironment
 
-@REM Don't create 'LEGO_env' from 'environment.yml'
+@REM Don't create environment from environment file
 :dontCreateEnvironment
-echo ERROR: 'LEGO_env' was not created and thus also not activated
+echo ERROR: '%envName%' was not created and thus also not activated
 goto :end
 
 :end
