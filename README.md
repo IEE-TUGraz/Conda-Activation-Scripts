@@ -19,12 +19,12 @@ the scripts below will take care of that.
 
 ## Activating the environment
 
-When executing the script, the environment placed in the parent folder will be activated. If you want to
-activate a different environment, call the scripts with the path to the environment.yml file as an argument. 
+When executing the script, the environment placed in the parent folder will be activated. If there is no
+environment.yml, the script will ask for an alternative path to an environment file. 
 
-- **Windows**: Execute the `activate_environment_windows.bat [optional: path/to/file]` file
-- **Unix**: Execute the `activate_environment_unix.sh [optional: path/to/file]` file
-  - When executing it from terminal, use ```source activate_environment_unix.sh [optional: path/to/file]```
+- **Windows**: Execute the `activate_environment_windows.bat` file
+- **Unix**: Execute the `activate_environment_unix.sh` file
+  - When executing it from terminal, use ```source activate_environment_unix.sh```
 - _For Pros_: Activate your own environment
 
 In the now opened command line, you can use the activated environment.
