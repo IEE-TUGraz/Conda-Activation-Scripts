@@ -15,14 +15,20 @@ goto :findEnvironmentFile
 
 @REM Check if environment file exists or needs to be created
 :findEnvironmentFile
-@REM First check if 'environment.yml' exists in parent folder
-set p=../environment.yml
-if not exist ../environment.yml (
-    echo WARNING: 'environment.yml' does not exist in parent folder ^(at '../environment.yml'^)!
-    goto :choiceEnvironmentPath
-) else (
-    echo OK: '%p%' file found!
+@REM Check if 'environment.yml' exists in parent folder, else if it exists in the same folder
+if exist ../environment.yml (
+    set p=../environment.yml
+    echo OK: '../environment.yml' file found in parent folder!
     goto :findCondaEnvironment
+) else (
+    if exist environment.yml (
+        set p=environment.yml
+        echo OK: 'environment.yml' file found in same folder!
+        goto :findCondaEnvironment
+    ) else (
+        echo WARNING: 'environment.yml' does not exist in parent folder ^('../environment.yml'^) or in same folder ^('environment.yml'^)!
+        goto :choiceEnvironmentPath
+    )
 )
 
 @REM Give user the option to specify path to environment file
