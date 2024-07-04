@@ -16,15 +16,20 @@ initializeConda() {
 
 ## Check if environment file exists or needs to be created
 findEnvironmentFile() {
-  ## First check if 'environment.yml' exists in parent folder
-  p="../environment.yml"
-  if [ ! -f $p ]
+  ## Check if 'environment.yml' exists in parent folder, else if it exists in the same folder
+  if [ -f ../environment.yml ]
   then
-    echo "WARNING: 'environment.yml' does not exist in parent folder (at '../environment.yml')!"
-    choiceEnvironmentPath
-  else
-    echo "OK: '$p' file found!"
+    p="../environment.yml"
+    echo "OK: '../environment.yml' file found in parent folder!"
     findCondaEnvironment
+  elif [ -f environment.yml ]
+  then
+    p="environment.yml"
+    echo "OK: 'environment.yml' file found in same folder!"
+    findCondaEnvironment
+  else
+    echo "WARNING: 'environment.yml' does not exist in parent folder ('../environment.yml') or in same folder ('environment.yml')!"
+    choiceEnvironmentPath
   fi
 }
 
