@@ -135,4 +135,4 @@ goto :end
 
 :end
 @REM Keep the command line open
-@call cmd /k cd ..
+@call cmd /k cd .

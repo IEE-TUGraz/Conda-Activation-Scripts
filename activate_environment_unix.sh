@@ -82,7 +82,7 @@ activateEnvironment() {
   else
     echo "SUCCESS: '$envName' was activated successfully!"
   fi
-  cd ..
+  cd .
 }
 
 ## Update environment according to environment file if the user wants to

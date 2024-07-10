@@ -15,12 +15,13 @@ Leave **all other options on default**.
 _For Unix_: Additionally prepare conda by executing ```conda init```
 
 _For Pros_: You can create an environment using the `environment.yml` file - for all others, 
-the scripts below will take care of that.
+the scripts take care of that.
 
 ## Activating the environment
 
-When executing the script, the environment placed in the parent folder will be activated. If there is no
-environment.yml, the script will ask for an alternative path to an environment file. 
+When executing the script, the environment placed in the parent folder or in the current folder (if there is none in the 
+parent folder) will be activated. If there is no environment.yml, the script will ask for an alternative path to an 
+environment file. 
 
 - **Windows**: Execute the `activate_environment_windows.bat` file
 - **Unix**: Execute the `activate_environment_unix.sh` file
@@ -28,4 +29,4 @@ environment.yml, the script will ask for an alternative path to an environment f
 - _For Pros_: Activate your own environment
 
 In the now opened command line, you can use the activated environment. The working directory will be the 
-**parent folder** of the script.
+**current folder** of the script.
