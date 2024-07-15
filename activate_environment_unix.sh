@@ -76,6 +76,7 @@ checkEnvironment() {
 
 ## Activate environment
 activateEnvironment() {
+  source activate base
   if ! conda activate $envName
   then
     echo "ERROR: '$envName' could not be activated - some error occurred!"
