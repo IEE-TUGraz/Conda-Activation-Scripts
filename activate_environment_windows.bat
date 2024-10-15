@@ -1,13 +1,16 @@
 :: Initializes Conda and activates environment from parent folder. If it doesn't exist or doesn't fulfill the
 :: requirements from the environment file, it creates the environment according to this file.
 :: Notes: Has to use goto instead of (much prettier) if/else to handle error-levels correctly
+@echo off
 @goto :initializeConda
 
 @REM Initialize conda from anaconda3
 :initializeConda
-@call "C:\Users\%USERNAME%\anaconda3\Scripts\activate.bat" "C:\Users\%USERNAME%\anaconda3"
+@set installPathConda=C:\Users\%USERNAME%\anaconda3
+@call "%installPathConda%\Scripts\activate.bat" "%installPathConda%"
 IF %ERRORLEVEL% NEQ 0 (
     echo ERROR: Conda initialization failed! Please follow the setup instructions in README.md
+    echo ERROR: If it is not installed at "%installPathConda%", please adjust the path in the activation script
     goto :end
 )
 echo OK: Conda was initialized successfully!
