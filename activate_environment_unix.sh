@@ -146,4 +146,5 @@ dontCreateEnvironment() {
   echo "ERROR: '$envName' was not created and thus also not activated"
 }
 
+export CC=mpicXX  # Set C++ compiler to mpicXX so that pip can install mpi4py correctly
 initializeConda
