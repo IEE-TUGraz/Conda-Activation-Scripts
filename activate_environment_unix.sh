@@ -64,12 +64,18 @@ findCondaEnvironment() {
 
 ## Check if conda environment fulfills all requirements from environment file
 checkEnvironment() {
-  if ! conda compare -n $envName $p &> /dev/null
+  # Create temporary copy of environment file to prepare it for the comparison (remove '-e' from pip install)
+  env_file_temp="$(mktemp "/tmp/${envName}-XXXX.yaml")"
+  # Replace '      - -e ' with '      - ' (removes editable flag from pip install for comparison)
+  sed 's/      - -e /      - /g' $p > $env_file_temp
+  if ! conda compare -n $envName $env_file_temp
   then
-    echo "WARNING: '$envName' does not fulfill all requirements from '$p'"
+    echo "WARNING: '$envName' does not fulfill all requirements from '$p' (see above)"
+    rm $env_file_temp  # Remove temporary file
     choiceUpdate
   else
     echo "OK: '$envName' fulfills all requirements from '$p'"
+    rm $env_file_temp  # Remove temporary file
     activateEnvironment
   fi
 }

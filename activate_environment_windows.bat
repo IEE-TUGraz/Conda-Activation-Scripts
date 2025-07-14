@@ -68,9 +68,18 @@ goto :checkEnvironment
 
 @REM Check if conda environment fulfills all requirements from environment file
 :checkEnvironment
-@call conda compare -n %envName% %p% > nul
+@REM Enable delayed expansion to use variables in a for loop
+@SETLOCAL enabledelayedexpansion
+@REM Create temporary copy of environment file to prepare it for the comparison (remove '-e' from pip install)
+@SET "env_file_temp=%TEMP%\%envName%-%RANDOM%.yaml"
+(for /f "usebackq delims=" %%A in ("%p%") do (
+    @set "line=%%A"
+    @REM Replace '      - -e ' with '      - ' (removes editable flag from pip install for comparison)
+    @echo !line:      - -e =      - !)) > "%env_file_temp%"
+@call conda compare -n %envName% %env_file_temp%
+@DEL "%env_file_temp%"
 IF %ERRORLEVEL% NEQ 0 (
-    echo WARNING: '%envName%' does not fulfill all requirements from '%p%'
+    @echo WARNING: '%envName%' does not fulfill all requirements from '%p%' (see above^)
     @REM Reset error level
     @call cmd /c exit /b 0
     goto :choiceUpdate
